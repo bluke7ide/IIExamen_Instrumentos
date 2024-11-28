@@ -1,0 +1,23 @@
+---
+title: "Instrumentos"
+author: "Luis Fernando Amey Apuy"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+Ejercicio 1
+```{r}
+mu <- 0.09
+sigma <- 0.2
+dt <- 1/12
+t <- 5 
+S <- rep(0, t*(1/dt))
+S[1] <- 30
+
+for(i in 2:(t*(1/dt))){
+  S[i] <- S[i-1] * (1+rnorm(1, (mu-sigma^2/2)*dt, sigma*dt))
+}
+plot(S, type = "l", col = "blue", lwd = 2,
+     xlab = "Tiempo (años)", ylab = "Precio de la acción",
+     main = "Trayectoria del precio de la acción")
+```
