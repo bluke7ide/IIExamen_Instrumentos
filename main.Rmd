@@ -1,23 +1,187 @@
 ---
-title: "Instrumentos"
-author: "Luis Fernando Amey Apuy"
+title: "Examen 2.2 - Instrumentos Financieros"
+author: 
+  - Luis Fernando Amey Apuy - C20470
+  - Javier Hernández Navarro - C13674
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  rmdformats::robobook:
+    self_contained: true
+    highlight: tango
 ---
 
-Ejercicio 1
+# Ejercicio 1
+
+## Inciso (a)
+
+```{r}
+# Datos
+mu <- 0.09
+sigma <- 0.2
+dt <- 1 / 12
+t <- 5
+
+S <- numeric(t * (1 / dt))
+S[1] <- 30
+
+# Simulación de la trayectoria
+for (i in 2:(t * (1 / dt))) {
+  S[i] <- S[i - 1] * (1 + mu * dt + sigma * rnorm(1) * sqrt(dt))
+}
+
+plot(1:(t * (1 / dt)), S, type = "l", col = rgb(0, 0, 1), lwd = 1,
+     xlab = "Tiempo (meses)", ylab = "Precio de la acción",
+     main = "Trayectoria simulada del precio de la acción",
+     ylim = range(S))
+```
+
+De manera explícita, los valores que toma el precio de la acción a lo largo de 5 años corresponden a los siguientes:
+
+```{r}
+S
+```
+
+El precio promedio esperado de la acción dadas las simulaciones corresponde a:
+
+```{r}
+mean(S)
+```
+
+Mientras que el precio determinado por la rentabilidad esperada de 9\% es:
+
+```{r}
+30 * (1 + 0.09) ^ 5
+```
+
+## Inciso (b)
+
+```{r}
+n_sim <- 20
+
+S <- matrix(0, nrow = t * (1 / dt), ncol = n_sim)
+S[1, ] <- 30
+
+for (j in 1:n_sim) {
+  for (i in 2:(t * (1 / dt))) {
+    S[i, j] <- S[i - 1, j] * (1 + mu * dt + sigma * rnorm(1) * sqrt(dt))
+  }
+}
+
+plot(1:(t * (1 / dt)), S[, 1], type = "l", col = rgb(0, 0, 1, 0.75), lwd = 0.5,
+     xlab = "Tiempo (meses)", ylab = "Precio de la acción",
+     main = "Trayectorias simuladas del precio de la acción",
+     ylim = range(S))
+
+for (j in 2:n_sim) {
+  lines(1:(t * (1 / dt)), S[, j], col = rgb(0, 0, 1, 0.75), lwd = 0.5)
+}
+
+lines(1:(t * (1 / dt)), rowMeans(S), col = "red", lwd = 2, lty = 2)
+legend("topright", legend = c("Simulaciones individuales", "Promedio"),
+       col = c(rgb(0, 0, 1, 0.5), "red"), lty = c(1, 2), lwd = c(1, 2))
+```
+
+## Inciso (c)
+
+Caso con volatilidad del 30\%:
+
+```{r}
+sigma <- 0.3
+
+S <- matrix(0, nrow = t * (1 / dt), ncol = n_sim)
+S[1, ] <- 30
+
+for (j in 1:n_sim) {
+  for (i in 2:(t * (1 / dt))) {
+    S[i, j] <- S[i - 1, j] * (1 + mu * dt + sigma * rnorm(1) * sqrt(dt))
+  }
+}
+
+plot(1:(t * (1 / dt)), S[, 1], type = "l", col = rgb(0, 0, 1, 0.75), lwd = 0.5,
+     xlab = "Tiempo (meses)", ylab = "Precio de la acción",
+     main = "Trayectorias simuladas del precio de la acción",
+     ylim = range(S))
+
+for (j in 2:n_sim) {
+  lines(1:(t * (1 / dt)), S[, j], col = rgb(0, 0, 1, 0.75), lwd = 0.5)
+}
+
+lines(1:(t * (1 / dt)), rowMeans(S), col = "red", lwd = 2, lty = 2)
+legend("topright", legend = c("Simulaciones individuales", "Promedio"),
+       col = c(rgb(0, 0, 1, 0.5), "red"), lty = c(1, 2), lwd = c(1, 2))
+```
+
+Caso con volatilidad del 50\%:
+
+```{r}
+sigma <- 0.5
+
+S <- matrix(0, nrow = t * (1 / dt), ncol = n_sim)
+S[1, ] <- 30
+
+for (j in 1:n_sim) {
+  for (i in 2:(t * (1 / dt))) {
+    S[i, j] <- S[i - 1, j] * (1 + mu * dt + sigma * rnorm(1) * sqrt(dt))
+  }
+}
+
+plot(1:(t * (1 / dt)), S[, 1], type = "l", col = rgb(0, 0, 1, 0.75), lwd = 0.5,
+     xlab = "Tiempo (meses)", ylab = "Precio de la acción",
+     main = "Trayectorias simuladas del precio de la acción",
+     ylim = range(S))
+
+for (j in 2:n_sim) {
+  lines(1:(t * (1 / dt)), S[, j], col = rgb(0, 0, 1, 0.75), lwd = 0.5)
+}
+
+lines(1:(t * (1 / dt)), rowMeans(S), col = "red", lwd = 2, lty = 2)
+legend("topright", legend = c("Simulaciones individuales", "Promedio"),
+       col = c(rgb(0, 0, 1, 0.5), "red"), lty = c(1, 2), lwd = c(1, 2))
+```
+
+Podemos ver que a medida que la volatilidad aumenta, las trayectorias se vuelven más dispersas y muestran fluctuaciones más extremas. Esto lo podemos corroborar gráficamente en lo siguiente:
+
+1. Hay una mayor amplitud de las trayectorias individuales, ya que con una volatilidad más alta, las fluctuaciones en los precios simulados son más grandes, lo que genera movimientos más pronunciados y menos predecibles.
+
+2. Hay un aumento significativo en el rango del eje y, ya que a mayores variaciones en los precios, el rango del eje vertical necesite expandirse para abarcar los valores extremos alcanzados por las trayectorias simuladas.
+
+Al aumentar la volatilidad, se tiene mayor incertidumbre, ya que esta representa el grado de variación o dispersión del precio alrededor de su media esperada. Volatilidades más altas implican mayor incertidumbre sobre los posibles precios futuros.
+
+Esto concuerda con la teoría financiera, donde la volatilidad mide el riesgo asociado a un activo. Cuando 
+$\sigma$ aumenta, la posibilidad de obtener precios significativamente diferentes también crece. Esto es observable en las simulaciones, donde las trayectorias individuales divergen más unas de otras.
+
+# Extra
+
+Lo agregamos porque se ve muy bonito y vale la pena verlo.
+
 ```{r}
 mu <- 0.09
 sigma <- 0.2
-dt <- 1/12
-t <- 5 
-S <- rep(0, t*(1/dt))
-S[1] <- 30
+dt <- 1 / 12
+t <- 5
+n_sim <- 1000
 
-for(i in 2:(t*(1/dt))){
-  S[i] <- S[i-1] * (1+rnorm(1, (mu-sigma^2/2)*dt, sigma*dt))
+S <- matrix(0, nrow = t * (1 / dt), ncol = n_sim)
+S[1, ] <- 30
+
+for(j in 1:n_sim) {
+  for (i in 2:(t * (1 / dt))) {
+    S[i, j] <- S[i - 1, j] * (1 + mu * dt + sigma * rnorm(1) * sqrt(dt))
+  }
 }
-plot(S, type = "l", col = "blue", lwd = 2,
-     xlab = "Tiempo (años)", ylab = "Precio de la acción",
-     main = "Trayectoria del precio de la acción")
+
+plot(1:(t * (1 / dt)), S[, 1], type = "l", col = rgb(0, 0, 1, 0.2), lwd = 0.5,
+     xlab = "Tiempo (meses)", ylab = "Precio de la acción",
+     main = "Trayectorias simuladas del precio de la acción",
+     ylim = range(S))  # Ajustar el rango del eje y
+
+for (j in 2:n_sim) {
+  lines(1:(t * (1 / dt)), S[, j], col = rgb(0, 0, 1, 0.2), lwd = 0.5)
+}
+
+# Resaltar la trayectoria promedio
+lines(1:(t * (1 / dt)), rowMeans(S), col = "red", lwd = 2, lty = 2)
+legend("topright", legend = c("Simulaciones individuales", "Promedio"),
+       col = c(rgb(0, 0, 1, 0.5), "red"), lty = c(1, 2), lwd = c(1, 2))
 ```
+
