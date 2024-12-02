@@ -12,7 +12,11 @@ output:
 
 # Ejercicio 1
 
+Una acción cuyo precio es de $30 tiene una rentabilidad esperada del 9\% y una volatilidad del 20\%.
+
 ## Inciso (a)
+
+Simule la trayectoria del precio de la acción a lo largo de 5 años utilizando pasos temporales mensuales y muetsras aleatorias de una distribución normal.
 
 ```{r}
 # Datos
@@ -21,6 +25,7 @@ sigma <- 0.2
 dt <- 1 / 12
 t <- 5
 
+# Vector para guardar las simulaciones
 S <- numeric(t * (1 / dt))
 S[1] <- 30
 
@@ -29,44 +34,38 @@ for (i in 2:(t * (1 / dt))) {
   S[i] <- S[i - 1] * (1 + mu * dt + sigma * rnorm(1) * sqrt(dt))
 }
 
+# Gráfico
 plot(1:(t * (1 / dt)), S, type = "l", col = rgb(0, 0, 1), lwd = 1,
      xlab = "Tiempo (meses)", ylab = "Precio de la acción",
      main = "Trayectoria simulada del precio de la acción",
      ylim = range(S))
 ```
 
-De manera explícita, los valores que toma el precio de la acción a lo largo de 5 años corresponden a los siguientes:
+De manera explícita, los valores que toma el precio de la acción a lo largo de 5 años en la simulación corresponden a los siguientes:
 
 ```{r}
 S
 ```
 
-El precio promedio esperado de la acción dadas las simulaciones corresponde a:
-
-```{r}
-mean(S)
-```
-
-Mientras que el precio determinado por la rentabilidad esperada de 9\% es:
-
-```{r}
-30 * (1 + 0.09) ^ 5
-```
-
 ## Inciso (b)
+
+Represente gráficamente 20 trayectorias simuladas del precio de la acción en el mismo gráfico.
 
 ```{r}
 n_sim <- 20
 
+# Matriz para guardar las simulaciones
 S <- matrix(0, nrow = t * (1 / dt), ncol = n_sim)
 S[1, ] <- 30
 
+# Simulaciones de la trayectoria del precio de la acción
 for (j in 1:n_sim) {
   for (i in 2:(t * (1 / dt))) {
     S[i, j] <- S[i - 1, j] * (1 + mu * dt + sigma * rnorm(1) * sqrt(dt))
   }
 }
 
+# Gráfico
 plot(1:(t * (1 / dt)), S[, 1], type = "l", col = rgb(0, 0, 1, 0.75), lwd = 0.5,
      xlab = "Tiempo (meses)", ylab = "Precio de la acción",
      main = "Trayectorias simuladas del precio de la acción",
@@ -83,20 +82,25 @@ legend("topright", legend = c("Simulaciones individuales", "Promedio"),
 
 ## Inciso (c)
 
-Caso con volatilidad del 30\%:
+Repita el paso anterior con volatilidad del 30\% y del 50\%, detalle lo que observa y si eso está en línea con la definición de volatilidad.
+
+### Caso con volatilidad del 30\%:
 
 ```{r}
 sigma <- 0.3
 
+# Matriz para guardar las simulaciones
 S <- matrix(0, nrow = t * (1 / dt), ncol = n_sim)
 S[1, ] <- 30
 
+# Simulaciones de la trayectoria del precio de la acción
 for (j in 1:n_sim) {
   for (i in 2:(t * (1 / dt))) {
     S[i, j] <- S[i - 1, j] * (1 + mu * dt + sigma * rnorm(1) * sqrt(dt))
   }
 }
 
+# Gráfico
 plot(1:(t * (1 / dt)), S[, 1], type = "l", col = rgb(0, 0, 1, 0.75), lwd = 0.5,
      xlab = "Tiempo (meses)", ylab = "Precio de la acción",
      main = "Trayectorias simuladas del precio de la acción",
@@ -111,20 +115,23 @@ legend("topright", legend = c("Simulaciones individuales", "Promedio"),
        col = c(rgb(0, 0, 1, 0.5), "red"), lty = c(1, 2), lwd = c(1, 2))
 ```
 
-Caso con volatilidad del 50\%:
+### Caso con volatilidad del 50\%:
 
 ```{r}
 sigma <- 0.5
 
+# Matriz para guardar las simulaciones
 S <- matrix(0, nrow = t * (1 / dt), ncol = n_sim)
 S[1, ] <- 30
 
+# Simulaciones de la trayectoria del precio de la acción
 for (j in 1:n_sim) {
   for (i in 2:(t * (1 / dt))) {
     S[i, j] <- S[i - 1, j] * (1 + mu * dt + sigma * rnorm(1) * sqrt(dt))
   }
 }
 
+# Gráfico
 plot(1:(t * (1 / dt)), S[, 1], type = "l", col = rgb(0, 0, 1, 0.75), lwd = 0.5,
      xlab = "Tiempo (meses)", ylab = "Precio de la acción",
      main = "Trayectorias simuladas del precio de la acción",
@@ -173,13 +180,12 @@ for(j in 1:n_sim) {
 plot(1:(t * (1 / dt)), S[, 1], type = "l", col = rgb(0, 0, 1, 0.2), lwd = 0.5,
      xlab = "Tiempo (meses)", ylab = "Precio de la acción",
      main = "Trayectorias simuladas del precio de la acción",
-     ylim = range(S))  # Ajustar el rango del eje y
+     ylim = range(S)) 
 
 for (j in 2:n_sim) {
   lines(1:(t * (1 / dt)), S[, j], col = rgb(0, 0, 1, 0.2), lwd = 0.5)
 }
 
-# Resaltar la trayectoria promedio
 lines(1:(t * (1 / dt)), rowMeans(S), col = "red", lwd = 2, lty = 2)
 legend("topright", legend = c("Simulaciones individuales", "Promedio"),
        col = c(rgb(0, 0, 1, 0.5), "red"), lty = c(1, 2), lwd = c(1, 2))
